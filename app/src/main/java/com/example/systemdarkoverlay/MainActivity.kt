@@ -93,12 +93,11 @@ fun OverlayScreen(viewModel: OverlayViewModel, onRequestPermission: () -> Unit) 
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text(text = "Opacity: ${(opacity * 100).toInt()}%")
-        Slider(
+        com.example.systemdarkoverlay.ui.components.CustomMoonSlider(
             value = opacity,
             onValueChange = { viewModel.updateOpacity(context, it) },
             valueRange = 0.1f..0.9f,
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier.fillMaxWidth(0.9f)
         )
     }
 }
