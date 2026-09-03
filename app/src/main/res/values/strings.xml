@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Dark Screen</string>
+    <string name="notification_channel_id">overlay_channel</string>
+    <string name="notification_channel_name">Overlay Service</string>
+</resources>
