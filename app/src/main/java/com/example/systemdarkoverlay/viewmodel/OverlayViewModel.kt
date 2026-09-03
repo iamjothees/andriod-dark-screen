@@ -3,12 +3,19 @@ package com.example.systemdarkoverlay.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import androidx.glance.appwidget.updateAll
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.glance.appwidget.updateAll
+import androidx.glance.appwidget.updateAll
 import com.example.systemdarkoverlay.OverlayPrefs
 import com.example.systemdarkoverlay.service.OverlayService
+import com.example.systemdarkoverlay.widget.DarkToggleWidget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class OverlayViewModel : ViewModel() {
 
@@ -36,6 +43,11 @@ class OverlayViewModel : ViewModel() {
         } else {
             context.stopService(intent)
         }
+        
+        // Make the widget reactive to app changes
+        viewModelScope.launch {
+            DarkToggleWidget().updateAll(context)
+        }
     }
 
     fun updateOpacity(context: Context, newOpacity: Float) {
@@ -46,6 +58,11 @@ class OverlayViewModel : ViewModel() {
                 putExtra(OverlayService.EXTRA_OPACITY, newOpacity)
             }
             context.startForegroundService(intent)
+        }
+        
+        // Note: The widget doesn't strictly depend on opacity visually right now, but updating is safe.
+        viewModelScope.launch {
+            DarkToggleWidget().updateAll(context)
         }
     }
     

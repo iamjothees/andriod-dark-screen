@@ -32,26 +32,22 @@
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Screen darkening overlay" />
         </service>
 
-        <receiver
-            android:name=".widget.OverlayWidgetReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/overlay_widget_info" />
-        </receiver>
+        
 
-        <receiver
-            android:name=".widget.OpacityWidgetReceiver"
+        
+            <receiver
+            android:name=".widget.DarkToggleWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/opacity_widget_info" />
+                android:resource="@xml/dark_toggle_widget_info" />
+        </receiver>
+            <receiver
+            android:name=".widget.DarkToggleBroadcastReceiver"
+            android:exported="false">
         </receiver>
     </application>
 

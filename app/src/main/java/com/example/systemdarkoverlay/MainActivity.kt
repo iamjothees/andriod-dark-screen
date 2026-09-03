@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             SystemDarkOverlayTheme {
                 viewModel = viewModel()
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     OverlayScreen(viewModel = viewModel, onRequestPermission = {
                         requestOverlayPermission()
-                    })
+                    }, modifier = Modifier.systemBarsPadding())
                 }
             }
         }
@@ -62,13 +63,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun OverlayScreen(viewModel: OverlayViewModel, onRequestPermission: () -> Unit) {
+fun OverlayScreen(viewModel: OverlayViewModel, onRequestPermission: () -> Unit, modifier: Modifier = Modifier) {
     val isActive by viewModel.isOverlayActive.collectAsState()
     val opacity by viewModel.opacity.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

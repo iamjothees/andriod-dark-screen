@@ -1,18 +1,26 @@
 import re
 
-manifest_path = "/Users/jotheeswaran/workspace/android-projects/SystemDarkOverlay/app/src/main/AndroidManifest.xml"
+manifest_path = "app/src/main/AndroidManifest.xml"
 with open(manifest_path, "r") as f:
     content = f.read()
 
-replacement = """        <service
-            android:name=".service.OverlayService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Screen darkening overlay" />
-        </service>"""
+# Remove the two receivers
+content = re.sub(r'<receiver\s+android:name="\.widget\.OverlayWidgetReceiver"[\s\S]*?</receiver>', '', content)
+content = re.sub(r'<receiver\s+android:name="\.widget\.OpacityWidgetReceiver"[\s\S]*?</receiver>', '', content)
 
-content = re.sub(r'<service[\s\S]*?/>', replacement, content)
+# Insert the new receiver before </application>
+new_receiver = """        <receiver
+            android:name=".widget.DarkToggleWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dark_toggle_widget_info" />
+        </receiver>
+"""
+content = content.replace("</application>", new_receiver + "    </application>")
 
 with open(manifest_path, "w") as f:
     f.write(content)

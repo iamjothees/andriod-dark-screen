@@ -17,7 +17,7 @@ object OverlayPrefs {
     }
 
     fun setRunning(context: Context, isRunning: Boolean) {
-        getPrefs(context).edit().putBoolean(KEY_IS_RUNNING, isRunning).apply()
+        getPrefs(context).edit().putBoolean(KEY_IS_RUNNING, isRunning).commit()
     }
 
     fun getOpacity(context: Context): Float {
