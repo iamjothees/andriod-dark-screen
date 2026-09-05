@@ -24,31 +24,25 @@
             </intent-filter>
         </activity>
 
-                <service
-            android:name=".service.OverlayService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Screen darkening overlay" />
-        </service>
-
-        
-
-        
-            <receiver
-            android:name=".widget.DarkToggleWidgetReceiver"
+        <service
+            android:name=".service.DarkScreenAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
             <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dark_toggle_widget_info" />
-        </receiver>
-            <receiver
-            android:name=".widget.DarkToggleBroadcastReceiver"
-            android:exported="false">
-        </receiver>
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+                
+
+        
+
+        
+            
+            
     </application>
 
 </manifest>

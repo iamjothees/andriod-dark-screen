@@ -53,12 +53,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::viewModel.isInitialized) {
+            viewModel.syncStateWithService(this)
+        }
+    }
+
     private fun requestOverlayPermission() {
-        val intent = Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            Uri.parse("package:${packageName}")
-        )
-        overlayPermissionLauncher.launch(intent)
+        viewModel.requestAccessibilityPermission(this)
+        // Note: Accessibility settings don't return a strict result code like OVERLAY_PERMISSION,
+        // so the user will return to the app and the LaunchedEffect or onResume will pick it up.
     }
 }
 

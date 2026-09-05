@@ -1,17 +1,14 @@
 package com.example.systemdarkoverlay.viewmodel
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import androidx.glance.appwidget.updateAll
-import androidx.glance.appwidget.updateAll
+import android.text.TextUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.glance.appwidget.updateAll
-import androidx.glance.appwidget.updateAll
 import com.example.systemdarkoverlay.OverlayPrefs
-import com.example.systemdarkoverlay.service.OverlayService
-import com.example.systemdarkoverlay.widget.DarkToggleWidget
+import com.example.systemdarkoverlay.service.DarkScreenAccessibilityService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +23,22 @@ class OverlayViewModel : ViewModel() {
     val opacity: StateFlow<Float> = _opacity.asStateFlow()
 
     fun checkOverlayPermission(context: Context): Boolean {
-        return Settings.canDrawOverlays(context)
+        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager
+        val enabledServices = am.getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+        for (service in enabledServices) {
+            if (service.resolveInfo.serviceInfo.packageName == context.packageName) {
+                return true
+            }
+        }
+        
+        // Fallback to checking our local instance just in case
+        return DarkScreenAccessibilityService.isServiceEnabled()
+    }
+
+    fun requestAccessibilityPermission(context: Context) {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        context.startActivity(intent)
     }
 
     fun toggleOverlay(context: Context) {
@@ -34,39 +46,21 @@ class OverlayViewModel : ViewModel() {
         _isOverlayActive.value = isActive
         OverlayPrefs.setRunning(context, isActive)
 
-        val intent = Intent(context, OverlayService::class.java).apply {
-            putExtra(OverlayService.EXTRA_OPACITY, _opacity.value)
-        }
-
-        if (isActive) {
-            context.startForegroundService(intent)
-        } else {
-            context.stopService(intent)
-        }
-        
-        // Make the widget reactive to app changes
-        viewModelScope.launch {
-            DarkToggleWidget().updateAll(context)
-        }
+        DarkScreenAccessibilityService.updateOverlayState()
     }
 
     fun updateOpacity(context: Context, newOpacity: Float) {
         _opacity.value = newOpacity
         OverlayPrefs.setOpacity(context, newOpacity)
-        if (_isOverlayActive.value) {
-            val intent = Intent(context, OverlayService::class.java).apply {
-                putExtra(OverlayService.EXTRA_OPACITY, newOpacity)
-            }
-            context.startForegroundService(intent)
-        }
         
-        // Note: The widget doesn't strictly depend on opacity visually right now, but updating is safe.
-        viewModelScope.launch {
-            DarkToggleWidget().updateAll(context)
-        }
+        DarkScreenAccessibilityService.updateOverlayState()
     }
     
     fun syncStateWithService(context: Context) {
+        // If accessibility service is disabled from settings by user, we should stop running state
+        if (!checkOverlayPermission(context)) {
+            OverlayPrefs.setRunning(context, false)
+        }
         _isOverlayActive.value = OverlayPrefs.isRunning(context)
         _opacity.value = OverlayPrefs.getOpacity(context)
     }
