@@ -7,9 +7,18 @@ object OverlayPrefs {
     private const val PREFS_NAME = "overlay_prefs"
     private const val KEY_IS_RUNNING = "is_running"
     private const val KEY_OPACITY = "opacity"
+    private const val KEY_SETUP_COMPLETE = "setup_complete"
 
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+
+    fun isSetupComplete(context: Context): Boolean {
+        return getPrefs(context).getBoolean(KEY_SETUP_COMPLETE, false)
+    }
+
+    fun setSetupComplete(context: Context) {
+        getPrefs(context).edit().putBoolean(KEY_SETUP_COMPLETE, true).apply()
     }
 
     fun isRunning(context: Context): Boolean {

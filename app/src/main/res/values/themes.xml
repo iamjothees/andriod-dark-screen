@@ -1,3 +1,9 @@
 <resources>
     <style name="Theme.SystemDarkOverlay" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#000000</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.SystemDarkOverlay</item>
+    </style>
 </resources>
